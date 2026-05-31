@@ -2,6 +2,7 @@ package com.lms.cms.controller;
 
 import com.lms.cms.dto.CourseRequestDTO;
 import com.lms.cms.dto.CourseRequestDtoTraditional;
+import com.lms.cms.dto.CourseResponseDTO;
 import com.lms.cms.entity.Course;
 import com.lms.cms.service.CourseService;
 import org.springframework.web.bind.annotation.*;
@@ -19,27 +20,27 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course createCourse(@RequestBody CourseRequestDTO course){
+    public CourseResponseDTO createCourse(@RequestBody CourseRequestDTO course){
         return courseService.createCourse(course);
     }
 
     @GetMapping("/{id}")
-    public Course getCourseById(@PathVariable Long id){
+    public CourseResponseDTO getCourseById(@PathVariable Long id){
         return courseService.getCourseById(id);
     }
 
     @GetMapping
-    public List<Course> getAllCourses(){
+    public List<CourseResponseDTO> getAllCourses(){
         return courseService.getAllCourses();
     }
 
     @PatchMapping("/{id}")
-    public Course updateCoursePartially(@PathVariable Long id, @RequestBody CourseRequestDtoTraditional updatedCourse){
+    public CourseResponseDTO updateCoursePartially(@PathVariable Long id, @RequestBody CourseRequestDTO updatedCourse){
         return courseService.updateCoursePartially(id, updatedCourse);
     }
 
     @PutMapping("/{id}")
-    public Course updateCourseCompletely(@PathVariable Long id, @RequestBody CourseRequestDtoTraditional updatedCourse){
+    public CourseResponseDTO updateCourseCompletely(@PathVariable Long id, @RequestBody CourseRequestDTO updatedCourse){
         return courseService.updateCourseCompletely(id, updatedCourse);
     }
 
