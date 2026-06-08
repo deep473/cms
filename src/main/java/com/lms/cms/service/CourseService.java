@@ -3,11 +3,11 @@ package com.lms.cms.service;
 import com.lms.cms.dto.CourseRequestDTO;
 import com.lms.cms.dto.CourseResponseDTO;
 import com.lms.cms.entity.Course;
+import com.lms.cms.exception.CourseNotFoundException;
 import com.lms.cms.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -18,61 +18,80 @@ public class CourseService {
         this.courseRepository = courseRepository;
     }
 
-    public CourseResponseDTO createCourse(CourseRequestDTO course){
-        Course createdCourse = courseRepository.save(mapToEntity(course));
-        return mapToResponseDTO(createdCourse);
+    public CourseResponseDTO createCourse(CourseRequestDTO courseRequestDTO) {
+        Course course = mapToEntity(courseRequestDTO);
+        Course savedCourse = courseRepository.save(course);
+
+        return mapToResponseDTO(savedCourse);
     }
 
     public CourseResponseDTO getCourseById(Long id) {
-        Course course = courseRepository.findById(id).get();
-        return mapToResponseDTO((course));
+        Course course = findCourseOrThrow(id);
+
+        return mapToResponseDTO(course);
     }
 
     public List<CourseResponseDTO> getAllCourses() {
-        List<Course> courseList = courseRepository.findAll();
-
-        return courseList.stream()
+        return courseRepository.findAll()
+                .stream()
                 .map(this::mapToResponseDTO)
                 .toList();
     }
 
     public CourseResponseDTO updateCoursePartially(Long id, CourseRequestDTO updatedCourse) {
-        Course existingCourse = courseRepository.findById(id).get();
+        Course existingCourse = findCourseOrThrow(id);
 
-        if(updatedCourse.name() != null)
+        if (updatedCourse.name() != null) {
             existingCourse.setName(updatedCourse.name());
+        }
 
-        if(updatedCourse.description() != null)
+        if (updatedCourse.description() != null) {
             existingCourse.setDescription(updatedCourse.description());
+        }
 
-        if(updatedCourse.price() != null)
+        if (updatedCourse.price() != null) {
             existingCourse.setPrice(updatedCourse.price());
+        }
 
         Course savedCourse = courseRepository.save(existingCourse);
+
         return mapToResponseDTO(savedCourse);
     }
 
     public CourseResponseDTO updateCourseCompletely(Long id, CourseRequestDTO updatedCourse) {
-        Course existingCourse = courseRepository.findById(id).get();
+        Course existingCourse = findCourseOrThrow(id);
 
         existingCourse.setName(updatedCourse.name());
         existingCourse.setDescription(updatedCourse.description());
         existingCourse.setPrice(updatedCourse.price());
 
         Course savedCourse = courseRepository.save(existingCourse);
+
         return mapToResponseDTO(savedCourse);
     }
 
     public String deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course existingCourse = findCourseOrThrow(id);
+
+        courseRepository.delete(existingCourse);
+
         return "Course deleted successfully!";
+    }
+
+    private Course findCourseOrThrow(Long id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new CourseNotFoundException(
+                        "Course not found with id: " + id
+                ));
     }
 
     private Course mapToEntity(CourseRequestDTO dto) {
         Course course = new Course();
+
         course.setName(dto.name());
         course.setDescription(dto.description());
         course.setPrice(dto.price());
+
         return course;
     }
 
@@ -84,5 +103,4 @@ public class CourseService {
                 course.getPrice()
         );
     }
-
 }
