@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     public String handleCourseNotFoundException(CourseNotFoundException ex) {
         return ex.getMessage();
     }
-
+//updated
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
