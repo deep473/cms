@@ -27,7 +27,6 @@ public class CourseService {
 
     public CourseResponseDTO getCourseById(Long id) {
         Course course = findCourseOrThrow(id);
-
         return mapToResponseDTO(course);
     }
 
@@ -70,12 +69,9 @@ public class CourseService {
         return mapToResponseDTO(savedCourse);
     }
 
-    public String deleteCourse(Long id) {
+    public void deleteCourse(Long id) {
         Course existingCourse = findCourseOrThrow(id);
-
         courseRepository.delete(existingCourse);
-
-        return "Course deleted successfully!";
     }
 
     private Course findCourseOrThrow(Long id) {
@@ -87,11 +83,9 @@ public class CourseService {
 
     private Course mapToEntity(CourseRequestDTO dto) {
         Course course = new Course();
-
         course.setName(dto.name());
         course.setDescription(dto.description());
         course.setPrice(dto.price());
-
         return course;
     }
 
